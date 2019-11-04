@@ -112,17 +112,17 @@ module spiflash (
 		begin
 			spi_in = buffer;        // spi_in 等于 buffer
 
-			if (bytecount == 1) begin
+			if (bytecount == 1) begin  //若bytecount 等于 1，那么有 spi_cmd 等于 buffer
 				spi_cmd = buffer;
 
-				if (spi_cmd == 8'h ab)
-					powered_up = 1;
+				if (spi_cmd == 8'h ab) //若spi_cmd 等于 ab，ab = 10101011
+					powered_up = 1; //那么有powered_up 等于 1
 
-				if (spi_cmd == 8'h b9)
-					powered_up = 0;
+				if (spi_cmd == 8'h b9) // 若spi_cmd 等于 b9，b9 = 10111001
+					powered_up = 0; // 那么有powered_up 等于 0
 
-				if (spi_cmd == 8'h ff)
-					xip_cmd = 0;
+				if (spi_cmd == 8'h ff) // 若spi_cmd 等于 ff，ff = 11111111
+					xip_cmd = 0;  //那么xip_cmd等于0
 			end
 
 			if (powered_up && spi_cmd == 'h 03) begin
