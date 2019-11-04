@@ -42,8 +42,7 @@ module spiflash (
 	inout io0, // MOSI
 	inout io1, // MISO
 	inout io2,
-	inout io3
-);
+	inout io3 );
 	localparam verbose = 0;
 	localparam integer latency = 8;
 	
@@ -83,34 +82,35 @@ module spiflash (
 	reg io2_dout = 0;
 	reg io3_dout = 0;
 
-	assign #1 io0 = io0_oe ? io0_dout : 1'bz;
-	assign #1 io1 = io1_oe ? io1_dout : 1'bz;
-	assign #1 io2 = io2_oe ? io2_dout : 1'bz;
-	assign #1 io3 = io3_oe ? io3_dout : 1'bz;
+	assign #1 io0 = io0_oe ? io0_dout : 1'bz;  //io0在io0_oe为正的时候输出io0_dout，否则输出高阻
+	assign #1 io1 = io1_oe ? io1_dout : 1'bz;  //io1在io1_oe为正的时候输出io1_dout，否则输出高阻
+	assign #1 io2 = io2_oe ? io2_dout : 1'bz;  //以此类推
+	assign #1 io3 = io3_oe ? io3_dout : 1'bz;  //以此类推  //综合工具会忽略延时值
 
 	wire io0_delayed;
 	wire io1_delayed;
 	wire io2_delayed;
 	wire io3_delayed;
 
-	assign #1 io0_delayed = io0;
+	assign #1 io0_delayed = io0;  // io0在输入状态下，io0_delayed等于io0获取的值
 	assign #1 io1_delayed = io1;
 	assign #1 io2_delayed = io2;
 	assign #1 io3_delayed = io3;
 
 	// 16 MB (128Mb) Flash
-	reg [7:0] memory [0:16*1024*1024-1];
+	reg [7:0] memory [0:16*1024*1024-1];  // Flash的大小为8bit，16MB
 
-	reg [1023:0] firmware_file;
-	initial begin
-		if (!$value$plusargs("firmware=%s", firmware_file))
+	reg [1023:0] firmware_file;     // firmware_file文件  1024bit  固件驱动文件
+	initial 
+	begin
+		if (!$value$plusargs("firmware=%s", firmware_file)) // 主要用于仿真中 若firmware的值没有给，那么就将firmware_file的值赋为“firmware.hex”
 			firmware_file = "firmware.hex";
-		$readmemh(firmware_file, memory);
+		$readmemh(firmware_file, memory); //将firmware_file的值读入到memory寄存器变量中去
 	end
 
-	task spi_action;
+	task spi_action;      // task可以有输入输出  不能有always等过程语句   函数没有输出值 函数名就是它的返回值  还可以定义变量
 		begin
-			spi_in = buffer;
+			spi_in = buffer;        // spi_in 等于 buffer
 
 			if (bytecount == 1) begin
 				spi_cmd = buffer;
